@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  friday:
+    build: .
+    container_name: friday-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - friday_data:/app/data
+      - friday_logs:/app/logs
+
+  # Опционально: мониторинг
+  watchtower:
+    image: containrrr/watchtower
+    container_name: friday-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --cleanup friday-bot
+    profiles:
+      - monitoring
+
+volumes:
+  friday_data:
+  friday_logs:
